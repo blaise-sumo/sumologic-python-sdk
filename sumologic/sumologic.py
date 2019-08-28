@@ -10,17 +10,19 @@ except ImportError:
 
 class SumoLogic(object):
 
-    def __init__(self, accessId, accessKey, endpoint=None, cookieFile='cookies.txt'):
+    def __init__(self, accessId, accessKey, endpoint=None, caBundle=None, cookieFile='cookies.txt'):
         self.session = requests.Session()
         self.session.auth = (accessId, accessKey)
         self.session.headers = {'content-type': 'application/json', 'accept': 'application/json'}
+        if caBundle is not None:
+            self.session.verify = caBundle
         cj = cookielib.FileCookieJar(cookieFile)
         self.session.cookies = cj
         if endpoint is None:
             self.endpoint = self._get_endpoint()
         else:
             self.endpoint = endpoint
-        if endpoint[-1:] == "/":
+        if self.endpoint[-1:] == "/":
           raise Exception("Endpoint should not end with a slash character")
 
     def _get_endpoint(self):
